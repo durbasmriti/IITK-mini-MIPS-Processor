@@ -1,3 +1,2 @@
 CS220
-
-Prof - Debopriya Basu Roy
+Prof - Debapriya Basu Roy

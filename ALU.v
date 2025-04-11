@@ -83,7 +83,7 @@ always @(*) begin
         // Floating-point operations
         case(alu_op)
             4'b0001: begin // add.s
-                result = $realtobits(fp_a + fp_b);
+                result = $realtobits(fp_a + fp_b); //there is a high chance realtobits will not work
             end
             4'b0010: begin // sub.s
                 result = $realtobits(fp_a - fp_b);

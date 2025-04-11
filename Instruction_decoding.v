@@ -1,20 +1,18 @@
 module Instruction_decoding(
     input [31:0] instruction,
-    input [31:0] pc_plus_4,
-    output reg [5:0] opcode,
+    input [31:0] pc_plus_4,output reg [5:0] opcode,
     output reg [4:0] rs, rt, rd, shamt,
-    output reg [5:0] funct,
-    output reg [15:0] imm16,
+    output reg [5:0] funct,output reg [15:0] imm16,
     output reg [25:0] target,
     output reg reg_write,
-    output reg mem_read,
-    output reg mem_write,
+    output reg mem_read,output reg mem_write,
     output reg branch,
-    output reg jump,
-    output reg alu_src,
+    output reg jump,output reg alu_src,
     output reg [3:0] alu_op,
-    output reg mem_to_reg,
-    output reg is_float
+    output reg mem_to_reg,output reg is_float,
+    output reg reg_dst,
+    output reg[1:0] jump_src,
+    output reg mfc1, output reg mtc1
 );
 
 always @(*) begin
@@ -27,6 +25,10 @@ always @(*) begin
     alu_op = 4'b0000;
     mem_to_reg = 0;
     is_float = 0;
+    reg_dst = 0;
+    jump_src = 2'b00;
+    mfc1 = 0;
+    mtc1 = 0;
 
     // Instruction fields
     opcode = instruction[31:26];
@@ -113,6 +115,10 @@ always @(*) begin
                     reg_write = 1;
                     alu_op = 4'b1110;
                 end
+                6'b001000: begin // jr
+                    jump = 1;
+                    jump_src = 2'b10; // Jump to register value
+                end
             endcase
 
         // I-type instructions
@@ -146,39 +152,44 @@ always @(*) begin
             alu_src = 1;
             mem_read = 1;
             mem_to_reg = 1;
-//            alu_op = 4'b0001;
+            alu_op = 4'b0001;
         end
         6'b101000: begin // sw
             alu_src = 1;
             mem_write = 1;
-//            alu_op = 4'b0001;
+            alu_op = 4'b0001;
         end
         6'b001111: begin // lui
             reg_write = 1;
             alu_src = 1;
-//            alu_op = 4'b0010;
+            alu_op = 4'b1100;
         end
+        //Branches
         6'b000100: begin // beq
-            branch = 1;
-            alu_op = 4'b0101; // Branch if equal
+        branch = 1;
         end
         6'b000101: begin // bne
             branch = 1;
-            alu_op = 4'b0110; // Branch if not equal
         end
         6'b000110: begin // bgt
             branch = 1;
-            alu_op = 4'b0111; // Branch if greater than
         end
         6'b000111: begin // bgte
             branch = 1;
-            alu_op = 4'b1000; // Branch if greater than or equal
         end
         6'b001000: begin // ble
             branch = 1;
-            alu_op = 4'b1001; // Branch if less than or equal
         end
-        //bleq, bleu, bgtu left
+        6'b001001: begin // bleq
+            branch = 1;
+        end
+        6'b001010: begin // bleu
+            branch = 1;
+        end
+        6'b001011: begin // bgtu
+            branch = 1;
+        end
+        //bleq, bleu, bgtu done
 
         // J-type instructions
         6'b000010: begin // j
@@ -189,47 +200,42 @@ always @(*) begin
             reg_write = 1;
         end
 
-        // Floating-point instructions
-        6'b110001: begin // mfcl
+        // Floating point instructions
+        6'b110000: begin // add.s
+            is_float = 1;
             reg_write = 1;
-            is_float = 1;
+            alu_op = 4'b0001;
         end
-        6'b110010: begin // mtc1
+        6'b110001: begin // sub.s
             is_float = 1;
-        end
-        6'b110100: begin // add.s
             reg_write = 1;
-            is_float = 1;
-            alu_op = 4'b1101;
+            alu_op = 4'b0010;
         end
-        6'b110101: begin // sub.s
+        6'b110010: begin // c.eq.s
+            is_float = 1;
+            alu_op = 4'b0011;
+        end
+        6'b110011: begin // c.lt.s
+            is_float = 1;
+            alu_op = 4'b0100;
+        end
+        6'b110100: begin // c.le.s
+            is_float = 1;
+            alu_op = 4'b0101;
+        end
+        6'b110101: begin // mov.s
+            is_float = 1;
             reg_write = 1;
-            is_float = 1;
-            alu_op = 4'b1110;
+            alu_op = 4'b0110;
         end
-        6'b111000: begin // c.eq.s
+        6'b110110: begin // mfc1
             is_float = 1;
-            alu_op = 4'b1111;
-        end
-        6'b111001: begin // c.le.s
-            is_float = 1;
-            alu_op = 4'b1111;
-        end
-        6'b111010: begin // c.lt.s
-            is_float = 1;
-            alu_op = 4'b1111;
-        end
-        6'b111011: begin // c.ge.s
-            is_float = 1;
-            alu_op = 4'b1111;
-        end
-        6'b111100: begin // c.gt.s
-            is_float = 1;
-            alu_op = 4'b1111;
-        end
-        6'b111101: begin // mov.s
             reg_write = 1;
+            mfc1 = 1;
+        end
+        6'b110111: begin // mtc1
             is_float = 1;
+            mtc1 = 1;
         end
     endcase
 end

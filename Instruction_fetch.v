@@ -28,7 +28,7 @@ assign instruction = inst_mem[PC[15:2]]; // Word-aligned access
 
 endmodule
 
-//added a slightly modified version below, to include jump targets
+//added a slightly modified version below, check both
 
 // module Instruction_fetch(
 //     input clk,

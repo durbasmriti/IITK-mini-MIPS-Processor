@@ -1,3 +1,26 @@
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+// Company:
+// Engineer:
+//
+// Create Date: 04/09/2025 03:41:30 PM
+// Design Name:
+// Module Name: Top_module
+// Project Name:
+// Target Devices:
+// Tool Versions:
+// Description:
+//
+// Dependencies:
+//
+// Revision:
+// Revision 0.01 - File Created
+// Additional Comments:
+//
+//////////////////////////////////////////////////////////////////////////////////
+
+
+
 module top_module(
     input clk,
     input reset
@@ -21,7 +44,7 @@ module top_module(
         .branch_target(branch_target),
         .branch_taken(branch_taken || jump), // Combine branch and jump
         .instruction(instruction),
-        .pc(pc),
+//        .pc(pc),
         .pc_plus_4(pc_plus_4)
     );
 
@@ -94,7 +117,7 @@ module top_module(
     );
 
     // Floating Point Unit
-    floating_point_unit FPU (
+    Floating_point_unit FPU (
         .a(f_read_data1),
         .b(f_read_data2),
         .fpu_op(alu_op),
@@ -108,6 +131,7 @@ module top_module(
     // Data Memory
     data_memory DM (
         .clk(clk),
+        .reset(reset),
         .mem_read(mem_read),
         .mem_write(mem_write),
         .address(alu_result),

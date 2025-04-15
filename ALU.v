@@ -1,87 +1,66 @@
-module ALU(
-    input [31:0] a, b,
+module ALU (
+    input [31:0] a,
+    input [31:0] b,
     input [3:0] alu_op,
     input is_float,
-    output reg [31:0] result,
-    output reg zero,
-    output reg overflow,
-    output reg carry_out,
-    output reg fp_cc,
-    output reg [31:0] lo, hi
+    output [31:0] result,
+    output zero,
+    output fp_cc,
+    output invalid, overflow, underflow
 );
 
-// Internal wires for FP operations
-wire [31:0] fp_result;
-wire fp_condition_code;
+    // Internal wires for both integer and float units
+    wire [31:0] int_result, float_result;
+    wire fp_zero, fp_invalid, fp_overflow, fp_underflow;
+    wire float_cc;
 
-// Integer multiplication intermediate values
-reg [63:0] mul_result;
+    // Integer ALU logic
+    reg [31:0] int_res;
+    reg zero_flag;
 
-// Instantiate Floating Point ALU
-FP_ALU fp_alu_inst (
-    .a(a),
-    .b(b),
-    .alu_op(alu_op),
-    .result(fp_result),
-    .fp_cc(fp_condition_code)
-);
-
-always @(*) begin
-    // Default values
-    result = 32'b0;
-    zero = 1'b0;
-    overflow = 1'b0;
-    carry_out = 1'b0;
-    fp_cc = 1'b0;
-    lo = 32'b0;
-    hi = 32'b0;
-
-    if (is_float) begin
-        result = fp_result;
-        fp_cc = fp_condition_code;
-    end
-    else begin
+    always @(*) begin
         case(alu_op)
-            4'b0000: result = ~a;                            // NOT
-            4'b0001: begin                                   // ADD/ADDI/ADDU
-                {carry_out, result} = a + b;
-                overflow = (a[31] == b[31]) && (result[31] != a[31]);
-            end
-            4'b0010: begin                                   // SUB/SUBU
-                {carry_out, result} = a - b;
-                overflow = (a[31] != b[31]) && (result[31] != a[31]);
-            end
-            4'b0011: begin                                   // MADD
-                mul_result = $signed(a) * $signed(b);
-                {hi, lo} = {hi, lo} + mul_result;
-            end
-            4'b0100: begin                                   // MADDU
-                mul_result = a * b;
-                {hi, lo} = {hi, lo} + mul_result;
-            end
-            4'b0101: begin                                   // MUL
-                mul_result = $signed(a) * $signed(b);
-                result = mul_result[31:0];
-                hi = mul_result[63:32];
-                lo = mul_result[31:0];
-            end
-            4'b0110: result = a & b;                         // AND/ANDI
-            4'b0111: result = a | b;                         // OR/ORI
-            4'b1000: result = a ^ b;                         // XOR/XORI
-            4'b1001: result = ~(a | b);                      // NOR
-            4'b1010: result = ($signed(a) < $signed(b)) ? 32'd1 : 32'd0;  // SLT/SLTI
-            4'b1011: result = (a < b) ? 32'd1 : 32'd0;       // SLTU/SLTIU
-            4'b1100: result = b << a[4:0];                   // SLL
-            4'b1101: result = b >> a[4:0];                   // SRL
-            4'b1110: result = $signed(b) >>> a[4:0];         // SRA
-            4'b1111: result = {b[15:0], 16'b0};              // LUI
-            default: result = 32'b0;
+            4'b0001: int_res = a + b;           // add / addi / addu
+            4'b0010: int_res = a - b;           // sub / subu
+            4'b0011: int_res = ($signed(a) * $signed(b)); // madd
+            4'b0100: int_res = a * b;           // maddu
+            4'b0101: int_res = a * b;           // mul
+            4'b0110: int_res = a & b;           // and / andi
+            4'b0111: int_res = a | b;           // or / ori
+            4'b1000: int_res = ~(a | b);        // nor
+            4'b1001: int_res = a ^ b;           // xor / xori
+            4'b1010: int_res = ($signed(a) < $signed(b)) ? 32'd1 : 32'd0; // slt
+            4'b1011: int_res = (a < b) ? 32'd1 : 32'd0; // sltu
+            4'b1100: int_res = {b[15:0], 16'b0}; // lui
+            4'b1110: int_res = b << a[4:0];      // sll / sla
+            4'b1111: int_res = b >> a[4:0];      // srl / sra
+            default: int_res = 32'b0;
         endcase
-        zero = (result == 32'b0);
+        zero_flag = (int_res == 32'b0);
     end
-end
+
+    // Instantiate Floating Point Unit
+    floating_point_unit fpu (
+        .a(a),
+        .b(b),
+        .fpu_op(alu_op),
+        .result(float_result),
+        .fp_cc(float_cc),
+        .invalid(fp_invalid),
+        .overflow(fp_overflow),
+        .underflow(fp_underflow)
+    );
+
+    // Output logic
+    assign result = is_float ? float_result : int_res;
+    assign zero = is_float ? (float_result == 32'b0) : zero_flag;
+    assign fp_cc = float_cc;
+    assign invalid = fp_invalid;
+    assign overflow = fp_overflow;
+    assign underflow = fp_underflow;
 
 endmodule
+
 
 
 // module ALU(

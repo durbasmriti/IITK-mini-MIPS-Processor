@@ -18,7 +18,6 @@ module ALU_tb;
     wire overflow;
     wire carry_out;
 
-    // Instantiate the ALU
     ALU uut (
         .a(a),
         .b(b),
@@ -31,9 +30,9 @@ module ALU_tb;
         .carry_out(carry_out)
     );
 
-    // Test stimulus
+    // Test
     initial begin
-        // Monitor signals
+        // Monitor
         $monitor("Time: %0t | a: %h | b: %h | alu_op: %b | is_float: %b | result: %h | zero: %b | overflow: %b | carry_out: %b | fp_cc: %b",
                  $time, a, b, alu_op, is_float, result, zero, overflow, carry_out, fp_cc);
 

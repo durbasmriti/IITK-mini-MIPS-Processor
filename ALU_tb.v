@@ -1,4 +1,7 @@
 `timescale 1ns / 1ps
+///
+// author - Dhriti Barnwal, Durbasmriti Saha
+///
 
 module ALU_tb;
 

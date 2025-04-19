@@ -1,3 +1,5 @@
+# author - Dhriti Barnwal, Durbasmriti Saha
+
 .data
 numbers:    .word 20, 30, 10, 40, 50, 60, 30, 25, 10, 5
 length:     .word 10

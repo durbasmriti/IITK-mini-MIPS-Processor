@@ -1,5 +1,6 @@
-CS220
+CS220 
+Creation of IITK-Mini-MIPS Processor
 
-Prof - Dr. Debopriya Basu Roy
+Prof - Dr. Debapriya Basu Roy
 
 Author - Dhriti Barnwal, Durbasmriti Saha

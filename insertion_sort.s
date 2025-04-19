@@ -1,7 +1,7 @@
 # author - Dhriti Barnwal, Durbasmriti Saha
 
 .data
-numbers:    .word 20, 30, 10, 40, 50, 60, 30, 25, 10, 5
+numbers:    .word 20, 36, 12, 46, 50, 69, 30, 44, 10, 5
 length:     .word 10
 
 .text

@@ -281,10 +281,10 @@
 
 
 module ALU (
-    input [31:0] a,
-    input [31:0] b,
-    input [3:0] alu_op,
-    input is_float,
+    input wire [31:0] a,
+    input wire [31:0] b,
+    input wire [3:0] alu_op,
+    input wire is_float,
     output [31:0] result,
     output zero,
     output fp_cc,

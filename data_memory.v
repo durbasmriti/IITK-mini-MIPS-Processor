@@ -30,7 +30,7 @@ module data_memory (
     output reg [31:0] read_data
 );
 
-    // Declare memory with 256 locations (for example, 256 x 32-bit memory)
+    // Declare memory with 256 locations
     reg [31:0] memory [0:255];
 
     always @(posedge clk or posedge reset) begin

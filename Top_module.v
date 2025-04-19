@@ -150,6 +150,7 @@ module top_module(
     );
 
     // Write-back MUX
-    assign write_data = mem_to_reg ? mem_read_data : alu_result;
+    assign write_data = (is_float && !mfc1_en && !mtc1_en) ? fpr_write_data : (mem_to_reg ? mem_read_data : alu_result)
+
 
 endmodule

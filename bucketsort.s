@@ -1,4 +1,4 @@
-
+# author - Dhriti Barnwal, Durbasmriti Saha
 .data
 arr: .float 0.123, 0.2735, 0.172, 0.3532, 0.1425, 0.5456, 0.214, 0.972
 temp: .space 400        # 10 buckets * 10 elements * 4 bytes

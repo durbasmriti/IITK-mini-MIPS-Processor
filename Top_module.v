@@ -41,7 +41,7 @@ module top_module(
     wire [5:0] opcode, funct;
     wire reg_write, mem_read, mem_write, branch, jump, alu_src, mem_to_reg, is_float;
     wire [3:0] alu_op, fpu_op;
-    wire branch_taken, fp_cc;
+    wire fp_cc;
     wire mtc1_en, mfc1_en;
 
     // Instruction Fetch (IF) Module

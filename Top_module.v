@@ -23,11 +23,18 @@
 
 module top_module(
     input clk,
-    input reset
+    input reset,
+    output [31:0] alu_result,
+    output [31:0] instructions,
+    output [31:0] pc_plus_4,
+    output branch_taken
 );
     // Wire declarations for connections between modules
-    wire [31:0] instruction, pc, pc_plus_4;
-    wire [31:0] read_data1, read_data2, alu_result, immediate, branch_target;
+    // wire [31:0] instruction, pc, pc_plus_4;
+    wire [31:0] read_data1, read_data2, branch_target;
+    wire [15:0] imm16
+    wire [31:0] immediate
+    assign immediate = {{16{imm16[15]}}, imm16}
     wire [31:0] f_read_data1, f_read_data2, fpr_write_data;
     wire [31:0] mem_read_data, write_data;
     wire [4:0] rs, rt, rd, shamt;
